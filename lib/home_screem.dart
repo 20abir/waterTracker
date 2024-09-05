@@ -22,13 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            GetTotalGlassCount().toString(),
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          _buildwaterTrackCounter(),
           const Text("Glass"),
           const SizedBox(
             height: 16,
@@ -51,23 +45,50 @@ class _HomeScreenState extends State<HomeScreen> {
             height: 24,
           ),
           Expanded(
-            child: ListView.separated(
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text("Time"),
-                    subtitle: Text("Date"),
-                    leading: Text("1"),
-                    trailing:
-                        IconButton(onPressed: () {}, icon: Icon(Icons.delete)),
-                  );
-                },
-                separatorBuilder: (contex, index) {
-                  return Divider();
-                },
-                itemCount: 3),
-          )
+            child: _buildListview(),
+          ),
         ],
       ),
+    );
+  }
+
+  Widget _buildListview() {
+    return ListView.separated(
+      itemCount: waterTrackList.length,
+      itemBuilder: (context, index) {
+        final WaterTrack waterTrack = waterTrackList[index];
+        return _buildwaterTrackListTile(waterTrack, index);
+      },
+      separatorBuilder: (contex, index) {
+        return Divider();
+      },
+    );
+  }
+
+  ListTile _buildwaterTrackListTile(int index) {
+    WaterTrack waterTrack = waterTrackList[index];
+    return ListTile(
+      title:
+          Text('${waterTrack.dateTime.hour} : ${waterTrack.dateTime.minute}'),
+      subtitle: Text(
+          '${waterTrack.dateTime.day}/${waterTrack.dateTime.month}/${waterTrack.dateTime.year}'),
+      leading: CircleAvatar(child: Text('${waterTrack.noOfGlasses}')),
+      trailing: IconButton(
+          onPressed: () => _onTapDeleteButton(index), icon: Icon(Icons.delete)),
+    );
+  }
+
+  Widget _buildwaterTrackCounter() {
+    return Column(
+      children: [
+        Text(
+          GetTotalGlassCount().toString(),
+          style: const TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
     );
   }
 
@@ -89,6 +110,11 @@ class _HomeScreenState extends State<HomeScreen> {
       dateTime: DateTime.now(),
     );
     waterTrackList.add(waterTrack);
+    setState(() {});
+  }
+
+  void _onTapDeleteButton(int index) {
+    waterTrackList.removeAt(index);
     setState(() {});
   }
 }
